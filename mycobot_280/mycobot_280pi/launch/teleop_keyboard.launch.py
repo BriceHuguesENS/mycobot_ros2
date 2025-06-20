@@ -59,4 +59,12 @@ def generate_launch_description():
     )
     res.append(follow_display_node)
 
+    teleop_keyboard_node = Node(
+        package="mycobot_280pi",
+        executable="teleop_keyboard",
+        name="teleop_keyboard",
+        output="screen"
+    )
+    res.append(teleop_keyboard_node)
+
     return LaunchDescription(res)
