@@ -44,13 +44,13 @@ def generate_launch_description():
     )
     res.append(robot_state_publisher_node)
 
-    follow_display_node = Node(
+    mycobot_driver_node = Node(
         package="mycobot_280pi",
-        executable="follow_display",
-        name="follow_display",
+        executable="mycobot_driver",
+        name="mycobot_driver",
         output="screen"
     )
-    res.append(follow_display_node)
+    res.append(mycobot_driver_node)
 
     rviz_node = Node(
         package="rviz2",
