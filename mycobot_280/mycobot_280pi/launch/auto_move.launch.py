@@ -51,7 +51,7 @@ def generate_launch_description():
         output="screen"
     )
     res.append(mycobot_driver_node)
-
+"""
     rviz_node = Node(
         package="rviz2",
         executable="rviz2",
@@ -60,7 +60,7 @@ def generate_launch_description():
         arguments=['-d', LaunchConfiguration("rvizconfig")]
     )
     res.append(rviz_node)
-
+"""
     auto_move_node = Node(
         package="mycobot_280pi",
         executable="auto_move",
