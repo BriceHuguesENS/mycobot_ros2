@@ -43,7 +43,7 @@ def generate_launch_description():
         parameters=[{'robot_description': robot_description}]
     )
     res.append(robot_state_publisher_node)
-
+"""
     mycobot_driver_node = Node(
         package="mycobot_280pi",
         executable="mycobot_driver",
@@ -51,7 +51,7 @@ def generate_launch_description():
         output="screen"
     )
     res.append(mycobot_driver_node)
-
+"""
     rviz_node = Node(
         package="rviz2",
         executable="rviz2",
