@@ -11,7 +11,7 @@ class AutoMove(Node):
         self.target_pub = self.create_publisher(JointState, 'target_joint_states', 10)
 
         # Define the initial and target joint positions in radians
-        self.initial_pos = [0, 0, 0, 0, 0, 0]
+        self.initial_pos = [0.00, 0.00, 0.00, 0.00, 0.00, 0.00]
         self.target_pos = [-0.00, -0.78, 0.78, 1.59, -1.59, -0.00]
 
         # Timer to control the publishing sequence
