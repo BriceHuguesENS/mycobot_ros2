@@ -1,9 +1,14 @@
+# Standard library
 import os
 
+# ROS 2 Python API for locating package resources
 from ament_index_python import get_package_share_directory
+
+# ROS 2 launch API: Node and parameter support
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
+# ROS 2 launch core
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.conditions import IfCondition
@@ -11,8 +16,10 @@ from launch.substitutions import Command, LaunchConfiguration
 
 
 def generate_launch_description():
+    # List to hold all launch elements
     res = []
 
+    # Declare a launch argument for the robot model (URDF or XACRO file)
     model_launch_arg = DeclareLaunchArgument(
         "model",
         default_value=os.path.join(
@@ -22,6 +29,7 @@ def generate_launch_description():
     )
     res.append(model_launch_arg)
 
+    # Declare a launch argument for the RViz configuration file
     rvizconfig_launch_arg = DeclareLaunchArgument(
         "rvizconfig",
         default_value=os.path.join(
@@ -31,11 +39,13 @@ def generate_launch_description():
     )
     res.append(rvizconfig_launch_arg)
 
+    # Generate the robot_description parameter by processing the XACRO/URDF file
     robot_description = ParameterValue(
         Command(['xacro ', LaunchConfiguration('model')]),
         value_type=str
     )
 
+    # Launch the robot_state_publisher node with the robot_description parameter
     robot_state_publisher_node = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
@@ -43,7 +53,8 @@ def generate_launch_description():
         parameters=[{'robot_description': robot_description}]
     )
     res.append(robot_state_publisher_node)
-"""
+
+    # Launch the custom non-blocking driver for the MyCobot 280 Pi
     mycobot_driver_node = Node(
         package="mycobot_280pi",
         executable="mycobot_driver",
@@ -51,7 +62,8 @@ def generate_launch_description():
         output="screen"
     )
     res.append(mycobot_driver_node)
-"""
+
+    # Launch RViz with the given configuration
     rviz_node = Node(
         package="rviz2",
         executable="rviz2",
@@ -61,12 +73,14 @@ def generate_launch_description():
     )
     res.append(rviz_node)
 
+    # Launch the auto_move node that publishes a precomputed joint trajectory
     auto_move_node = Node(
         package="mycobot_280pi",
-        executable="auto_move",
-        name="auto_move",
+        executable="auto_move_trajectory",
+        name="auto_move_trajectory",
         output="screen"
     )
     res.append(auto_move_node)
 
+    # Return the complete launch description
     return LaunchDescription(res)

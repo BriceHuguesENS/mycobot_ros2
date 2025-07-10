@@ -63,6 +63,13 @@ setup(
             'teleop_keyboard = mycobot_280pi.teleop_keyboard:main',
             'auto_move = mycobot_280pi.auto_move:main',
             'mycobot_driver = mycobot_280pi.mycobot_driver:main',
+            'joint_logger = mycobot_280pi.joint_logger:main',
+            'auto_move_trajectory = mycobot_280pi.auto_move_trajectory:main',
+            'mycobot_driver_smooth = mycobot_280pi.mycobot_driver_smooth:main',
+            'mycobot_driver_fast = mycobot_280pi.mycobot_driver_fast:main',
+            'mycobot_driver_non_blocking = mycobot_280pi.mycobot_driver_non_blocking:main',
+            'mycobot_driver_non_blocking_live = mycobot_280pi.mycobot_driver_non_blocking_live:main',
+            'auto_move_trajectory_live = mycobot_280pi.auto_move_trajectory_live:main'
         ],
     },
 )

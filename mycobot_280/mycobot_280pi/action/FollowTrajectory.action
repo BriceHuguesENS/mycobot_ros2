@@ -1,0 +1,11 @@
+# Goal
+trajectory_msgs/JointTrajectory trajectory
+
+---
+# Result
+bool success
+string message
+
+---
+# Feedback
+trajectory_msgs/JointTrajectoryPoint current_point
