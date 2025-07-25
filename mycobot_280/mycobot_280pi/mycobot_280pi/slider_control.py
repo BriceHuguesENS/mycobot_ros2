@@ -29,7 +29,7 @@ class Slider_Subscriber(Node):
         )
         self.subscription
 
-        self.mc = MyCobot280("/dev/ttyAMA0", 1000000)
+        self.mc = MyCobot280("/dev/ttyAMA0", 1000000, debug = True)
         time.sleep(0.05)
         self.mc.set_fresh_mode(1)
         time.sleep(0.05)

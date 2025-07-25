@@ -40,10 +40,11 @@ class MyCobotDriver(Node):
         self.get_logger().info(f"Connecting to myCobot on port: {port} at baudrate: {baud}")
 
         # Initialize the MyCobot280 robot
-        self.mc = MyCobot280(port, str(baud))
+        self.mc = MyCobot280(port, str(baud), debug=False)
         time.sleep(0.05)
         self.mc.set_fresh_mode(1)  # Refresh communication mode
         time.sleep(0.05)
+        self.mc.focus_all_servos()
 
         # Create publishers:
         # - joint_pub publishes current joint angles
@@ -83,7 +84,7 @@ class MyCobotDriver(Node):
         self.joint_state_msg.header.stamp = now
         self.joint_state_msg.position = angles
         self.joint_pub.publish(self.joint_state_msg)
-
+        self.get_logger().info("Initial position published")
         # Read Cartesian coordinates of the end-effector
         coords = self.mc.get_coords()
         self.marker_msg.header.stamp = now
@@ -96,23 +97,26 @@ class MyCobotDriver(Node):
         # Publish visualization marker
         self.marker_pub.publish(self.marker_msg)
 
+        self.destroy_publisher(self.joint_pub)
+        self.destroy_publisher(self.marker_pub)
         # Set up periodic timer callback (10 Hz)
-        self.timer = self.create_timer(1.0 / 10, self.timer_callback)
+        #self.timer = self.create_timer(1/10.0, self.timer_callback)
         
     def timer_callback(self):
-        """Main control callback executed at 10 Hz.
-        Publishes joint states and end-effector marker.
-        """
+        """Publishes joint states and end-effector marker"""
         now = self.get_clock().now().to_msg()
 
         # Read joint angles (in radians) from the robot
         angles = self.mc.get_radians()
+        #angles = [0.0,0.0,0.0,0.0,0.0,0.0]
+
         self.joint_state_msg.header.stamp = now
         self.joint_state_msg.position = angles
         self.joint_pub.publish(self.joint_state_msg)
 
         # Read Cartesian coordinates of the end-effector
         coords = self.mc.get_coords()
+        #coords = [0.0,0.0,0.0,0.0,0.0,0.0]
         self.marker_msg.header.stamp = now
 
         # Adjust coordinate axes to ROS convention (swap x/y, invert x)
@@ -125,14 +129,18 @@ class MyCobotDriver(Node):
 
     def trajectory_callback(self, msg):
         """Callback for receiving new joint target positions."""
-        self.latest_target_positions = list(msg.position)
-
-        # Extract velocity (expected as a single scalar for all joints)
-        self.latest_target_velocity = int(round(msg.velocity[0]))
 
         # Send new joint positions to the robot (blocking call)
-        self.mc.send_radians(self.latest_target_positions, self.latest_target_velocity)
-    
+
+        #start_time = self.get_clock().now()
+        self.mc.send_radians(list(msg.position), round(msg.velocity[0]))
+        # end_time = self.get_clock().now()
+        # elapsed_time = (end_time - start_time).nanoseconds / 1e6  # en millisecondes
+        
+
+        #self.get_logger().info(f'Send to motors : {elapsed_time:.2f} ms')
+        #self.get_logger().info("Joint command sent to the robot")
+
     def destroy_node(self):
         # Custom cleanup before shutdown
         self.get_logger().info("Releasing all servos before shutdown.")
@@ -155,8 +163,6 @@ def main(args=None):
         rclpy.spin(node)
     except KeyboardInterrupt:
         node.get_logger().info("Keyboard interrupt received. Stopping [mycobot_driver] node.")
-    except ROSInterruptException:
-        node.get_logger().info("ROS interrupt exception. Shutting down.")
     finally:
         # Clean shutdown: stop the node and release resources
         node.get_logger().info("Shutting down [mycobot_driver] node and ROS.")

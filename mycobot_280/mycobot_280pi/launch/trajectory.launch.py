@@ -54,7 +54,35 @@ def generate_launch_description():
     )
     res.append(robot_state_publisher_node)
 
-    # Launch the custom non-blocking driver for the MyCobot 280 Pi
+    # Launch RViz with the given configuration
+    # rviz_node = Node(
+    #     package="rviz2",
+    #     executable="rviz2",
+    #     name="rviz2",
+    #     output="screen",
+    #     arguments=['-d', LaunchConfiguration("rvizconfig")]
+    # )
+    # res.append(rviz_node)
+
+    # Launch the auto_move node that precomputed and publishes end-effector trajectory
+    trajectory_planner_node = Node(
+        package="mycobot_280pi",
+        executable="trajectory_planner",
+        name="trajectory_planner",
+        output="screen"
+    )
+    res.append(trajectory_planner_node)
+
+    # Launch the auto_move node that precomputed and publishes joint trajectory
+    end_effector_controller_node = Node(
+        package="mycobot_280pi",
+        executable="end_effector_controller",
+        name="end_effector_controller",
+        output="screen"
+    )
+    res.append(end_effector_controller_node)
+
+        # Launch the custom non-blocking driver for the MyCobot 280 Pi
     mycobot_driver_node = Node(
         package="mycobot_280pi",
         executable="mycobot_driver",
@@ -62,25 +90,6 @@ def generate_launch_description():
         output="screen"
     )
     res.append(mycobot_driver_node)
-
-    # Launch RViz with the given configuration
-    rviz_node = Node(
-        package="rviz2",
-        executable="rviz2",
-        name="rviz2",
-        output="screen",
-        arguments=['-d', LaunchConfiguration("rvizconfig")]
-    )
-    res.append(rviz_node)
-
-    # Launch the auto_move node that publishes a precomputed joint trajectory
-    auto_move_node = Node(
-        package="mycobot_280pi",
-        executable="auto_move_trajectory",
-        name="auto_move_trajectory",
-        output="screen"
-    )
-    res.append(auto_move_node)
 
     # Return the complete launch description
     return LaunchDescription(res)
